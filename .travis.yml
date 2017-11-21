@@ -1,0 +1,12 @@
+sudo: required
+
+services:
+  - docker
+
+language: java
+
+script:
+  -
+
+install:
+  - ./docker-build.sh
