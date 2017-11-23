@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 export JENKINS_VERSION=latest
-export GITLAB_VERSION=10.0.6-ce.0
+export GITLAB_VERSION=10.1.4-ce.0
 export NEXUS_VERSION=3.6.0
 export SONAR_VERSION=5.6.7
 

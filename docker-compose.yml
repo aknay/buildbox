@@ -20,12 +20,16 @@ services:
       - "8222:22"
       - "8280:80"
       - "8243:443"
+      - "9090:9090"
     volumes:
       - ${GITLAB_DATA_DIR}/etc:/etc/gitlab
       - ${GITLAB_DATA_DIR}/logs:/var/log/gitlab
       - ${GITLAB_DATA_DIR}/data:/var/opt/gitlab
+    hostname: 'gitlab.example.com'
     environment:
-      - hostname=gitlab.example.com
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://localhost:9090'
+        gitlab_rails['gitlab_shell_ssh_port'] = 8222
 
   nexus:
     image: sonatype/nexus3:${NEXUS_VERSION}

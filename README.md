@@ -35,3 +35,5 @@ This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
 
 ```
 * Open your browser at [localhost:8180](http://localhost:8180/login?from=%2F)
+
+All data of the container is started within the folder `data`.
