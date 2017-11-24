@@ -1,6 +1,7 @@
 version: '2'
 services:
   jenkins:
+    container_name: buildbox_jenkins
     image: shimmi/jenkins:${JENKINS_VERSION}
     ports:
       - "${JENKINS_SERVER_PORT}:8080"
@@ -9,12 +10,14 @@ services:
       - ${JENKINS_DATA_DIR}/home:/var/jenkins_home
     environment:
       - JENKINS_ADMIN_PASS
+      - JENKINS_ADMIN_PASS
     links:
       - gitlab
       - sonar
       - nexus
 
   gitlab:
+    container_name: buildbox_gitlab
     image: gitlab/gitlab-ce:${GITLAB_VERSION}
     ports:
       - "8222:22"
@@ -27,11 +30,13 @@ services:
       - ${GITLAB_DATA_DIR}/data:/var/opt/gitlab
     hostname: 'gitlab.example.com'
     environment:
-      GITLAB_OMNIBUS_CONFIG: |
-        external_url 'http://localhost:9090'
-        gitlab_rails['gitlab_shell_ssh_port'] = 8222
+      - GITLAB_ROOT_PASSWORD
+      - GITLAB_OMNIBUS_CONFIG |
+          external_url 'http://localhost:9090'
+          gitlab_rails['gitlab_shell_ssh_port'] = 8222
 
   nexus:
+    container_name: buildbox_nexus
     image: sonatype/nexus3:${NEXUS_VERSION}
     ports:
       - "8381:8081"
@@ -39,6 +44,7 @@ services:
       - ${NEXUS_DATA_DIR}/data:/nexus-data
 
   sonar:
+    container_name: buildbox_sonar
     image: sonarqube:${SONAR_VERSION}
     ports:
       - "8400:9000"

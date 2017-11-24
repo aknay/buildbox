@@ -12,7 +12,7 @@
 
 * Build the images: `./docker-build.sh`
 * Start the images: `./docker-run.sh`
-* Get the admin password for initial setup: `docker logs $(docker ps | grep shimmi/jenkins:latest | awk '{print $1}')`
+* Get the admin password for initial setup: `docker logs buildbox_jenkins`
   Look for this entry:
 ```
 Nov 19, 2017 13:45:26 PM jenkins.install.SetupWizard init
