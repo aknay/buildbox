@@ -8,32 +8,80 @@ services:
       - "8100:50000"
     volumes:
       - ${JENKINS_DATA_DIR}/home:/var/jenkins_home
-    environment:
-      - JENKINS_ADMIN_PASS
-      - JENKINS_ADMIN_PASS
     links:
       - gitlab
       - sonar
       - nexus
 
+  redis:
+    container_name: buildbox_gitlab_redis
+    restart: always
+    image: sameersbn/redis:latest
+    command:
+    - --loglevel warning
+    volumes:
+    - ${GITLAB_REDIS_DIR}:/var/lib/redis:Z
+
+  postgresql:
+    container_name: buildbox_gitlab_db
+    restart: always
+    image: sameersbn/postgresql:9.6-2
+    volumes:
+    - ${GITLAB_DB_DIR}:/var/lib/postgresql:Z
+    environment:
+    - DB_USER=gitlab
+    - DB_PASS=password
+    - DB_NAME=gitlabhq_production
+    - DB_EXTENSION=pg_trgm
+
   gitlab:
     container_name: buildbox_gitlab
-    image: gitlab/gitlab-ce:${GITLAB_VERSION}
+    image: sameersbn/gitlab:${GITLAB_VERSION}
     ports:
       - "8222:22"
       - "8280:80"
       - "8243:443"
-      - "9090:9090"
     volumes:
-      - ${GITLAB_DATA_DIR}/etc:/etc/gitlab
-      - ${GITLAB_DATA_DIR}/logs:/var/log/gitlab
-      - ${GITLAB_DATA_DIR}/data:/var/opt/gitlab
-    hostname: 'gitlab.example.com'
+      - ${GITLAB_DATA_DIR}/home:/home/git/data:Z
     environment:
-      - GITLAB_ROOT_PASSWORD
-      - GITLAB_OMNIBUS_CONFIG |
-          external_url 'http://localhost:9090'
-          gitlab_rails['gitlab_shell_ssh_port'] = 8222
+    - DEBUG=false
+
+    - DB_ADAPTER=postgresql
+    - DB_HOST=postgresql
+    - DB_PORT=5432
+    - DB_USER=gitlab
+    - DB_PASS=password
+    - DB_NAME=gitlabhq_production
+
+    - REDIS_HOST=redis
+    - REDIS_PORT=6379
+
+    - TZ=Asia/Kolkata
+    - GITLAB_TIMEZONE=Kolkata
+
+    - GITLAB_HTTPS=false
+    - SSL_SELF_SIGNED=false
+
+    - GITLAB_HOST=localhost
+    - GITLAB_PORT=${GITLAB_HTTP_PORT}
+    - GITLAB_SSH_PORT=${GITLAB_SSH_PORT}
+    - GITLAB_RELATIVE_URL_ROOT=
+    - GITLAB_SECRETS_DB_KEY_BASE=long-and-random-alphanumeric-string
+    - GITLAB_SECRETS_SECRET_KEY_BASE=long-and-random-alphanumeric-string
+    - GITLAB_SECRETS_OTP_KEY_BASE=long-and-random-alphanumeric-string
+
+    - GITLAB_ROOT_PASSWORD=
+    - GITLAB_ROOT_EMAIL=
+
+    - GITLAB_NOTIFY_ON_BROKEN_BUILDS=true
+    - GITLAB_NOTIFY_PUSHER=false
+
+    - GITLAB_EMAIL=notifications@example.com
+    - GITLAB_EMAIL_REPLY_TO=noreply@example.com
+    - GITLAB_INCOMING_EMAIL_ADDRESS=reply@example.com
+
+    - GITLAB_BACKUP_SCHEDULE=daily
+    - GITLAB_BACKUP_TIME=01:00
 
   nexus:
     container_name: buildbox_nexus
