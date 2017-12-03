@@ -12,6 +12,7 @@ services:
       - gitlab
       - sonar
       - nexus
+      - seleniumhub
 
   redis:
     container_name: buildbox_gitlab_redis
@@ -37,6 +38,12 @@ services:
   gitlab:
     container_name: buildbox_gitlab
     image: sameersbn/gitlab:${GITLAB_VERSION}
+    depends_on:
+      - postgresql
+      - redis
+    links:
+      - postgresql
+      - redis
     ports:
       - "8222:22"
       - "8280:80"
@@ -99,3 +106,27 @@ services:
       - "8492:9092"
     volumes:
       - ${SONAR_DATA_DIR}/data:/opt/sonarqube/data
+
+  seleniumhub:
+    container_name: buildbox_selenium_hub
+    image: selenium/hub
+    ports:
+      - "4444:4444"
+
+  firefox:
+    container_name: buildbox_selenium_node_firefox
+    image: selenium/node-firefox
+    depends_on:
+      - seleniumhub
+    environment:
+      - HUB_PORT_4444_TCP_ADDR=seleniumhub
+      - HUB_PORT_4444_TCP_PORT=4444
+
+  chrome:
+    container_name: buildbox_selenium_node_chrome
+    image: selenium/node-chrome
+    depends_on:
+      - seleniumhub
+    environment:
+      - HUB_PORT_4444_TCP_ADDR=seleniumhub
+      - HUB_PORT_4444_TCP_PORT=4444

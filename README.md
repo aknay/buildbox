@@ -45,5 +45,6 @@ All data of the container is started within the folder `data`.
 ### Update dependency graph
 
 ```
-docker run --rm -it --name dcv -v $(pwd):/input pmsipilot/docker-compose-viz render -m image docker-compose.yml && mv docker-compose.png docs/images/
+docker run --rm -it --name dcv -v $(pwd):/input pmsipilot/docker-compose-viz render -m image docker-compose.yml &&\
+  mv docker-compose.png docs/images/
 ```
