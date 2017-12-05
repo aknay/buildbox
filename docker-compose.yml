@@ -1,13 +1,30 @@
-version: '2'
+version: '2.1'
 services:
   jenkins:
     container_name: buildbox_jenkins
-    image: shimmi/jenkins:${JENKINS_VERSION}
+    build: ./docker/jenkins
     ports:
       - "${JENKINS_SERVER_PORT}:8080"
       - "8100:50000"
     volumes:
       - ${JENKINS_DATA_DIR}/home:/var/jenkins_home
+    healthcheck:
+        test: ["CMD", "wget", "http://localhost:${JENKINS_SERVER_PORT}/login"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+    environment:
+      - JENKINS_ADMIN_USER
+      - JENKINS_ADMIN_PASS
+      - JENKINS_ADMIN_ADDR
+      - JENKINS_SERVER_PORT
+      - JENKINS_IMAGE_VERSION
+      - JENKINS_DATA_DIR
+      - JENKINS_EXECUTORS
+      - JENKINS_GIT_NAME
+      - JENKINS_GIT_EMAIL
+      - JENKINS_SLAVE_AGENT_PORT
+      - JENKINS_QUIET_PERIOD
     links:
       - gitlab
       - sonar
@@ -77,7 +94,7 @@ services:
     - GITLAB_SECRETS_SECRET_KEY_BASE=long-and-random-alphanumeric-string
     - GITLAB_SECRETS_OTP_KEY_BASE=long-and-random-alphanumeric-string
 
-    - GITLAB_ROOT_PASSWORD=
+    - GITLAB_ROOT_PASSWORD=password
     - GITLAB_ROOT_EMAIL=
 
     - GITLAB_NOTIFY_ON_BROKEN_BUILDS=true
@@ -111,7 +128,7 @@ services:
     container_name: buildbox_selenium_hub
     image: selenium/hub
     ports:
-      - "4444:4444"
+      - "8544:4444"
 
   firefox:
     container_name: buildbox_selenium_node_firefox

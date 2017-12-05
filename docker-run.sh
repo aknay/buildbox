@@ -18,4 +18,4 @@ docker-compose up -d
 # Show logs. Hit 'Ctrl + c' to exit.
 # docker-compose logs -f
 
-while ! echo exit | nc localhost ${JENKINS_SERVER_PORT}; do sleep 10; done
+while ! echo exit | nc localhost ${JENKINS_SERVER_PORT} ; do sleep 30; done
